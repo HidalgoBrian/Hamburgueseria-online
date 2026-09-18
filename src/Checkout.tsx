@@ -249,13 +249,6 @@ export default function DeliveryCheckout({
             onChange={(value) => change("name", value)}
             required
           />
-          <Field
-            label="Teléfono"
-            type="tel"
-            value={customer.phone}
-            onChange={(value) => change("phone", value)}
-            required
-          />
           <div>
             <p className="mb-2 text-sm font-bold">¿Cómo lo recibís?</p>
             <div className="grid grid-cols-2 gap-2">

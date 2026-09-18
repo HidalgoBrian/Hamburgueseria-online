@@ -71,7 +71,7 @@ export function makeWhatsAppMessage(items: CartItem[], customer: CustomerDetails
     '',
     `[ ENTREGA ]\n${fulfillment}`,
     '',
-    `[ CLIENTE ]\n${customer.name}\nTel: ${customer.phone}`,
+    `[ CLIENTE ]\n${customer.name}`,
     '',
     `[ PAGO ]\n${payment}`,
     ...(customer.notes ? ['', `[ NOTAS ]\n${customer.notes}`] : []),
