@@ -39,7 +39,14 @@ export default function App() {
   const customizationFor = (product: Product): BurgerCustomization | null => {
     if (product.customization) return product.customization
     const category = categories.find((entry) => entry.id === product.category_id)
-    return category?.name.toLocaleLowerCase().includes('hamburgues') ? burgerCustomization : null
+    if (!category?.name.toLocaleLowerCase().includes('hamburgues')) return null
+    return {
+      ...burgerCustomization,
+      variants: burgerCustomization.variants.map((variant, index) => ({
+        ...variant,
+        price: product.sale_price + index * 2000,
+      })),
+    }
   }
 
   const updateCart = (product: Product | CartItem, change: number) => {
