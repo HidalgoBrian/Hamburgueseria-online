@@ -2,5 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './styles.css'
 import App from './App'
+import Admin from './Admin'
 
-createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>)
+const page = window.location.pathname.startsWith('/admin') ? <Admin /> : <App />
+createRoot(document.getElementById('root')!).render(<StrictMode>{page}</StrictMode>)
