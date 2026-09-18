@@ -3,6 +3,7 @@ import { Bike, ChevronRight, ClipboardList, Flame, Minus, Plus, ShoppingBag, Sto
 import { burgerCustomization, demoCategories, demoProducts, demoSettings } from './data'
 import { formatMoney, makeWhatsAppMessage, saveOrder } from './lib/orders'
 import { supabase } from './lib/supabase'
+import DeliveryCheckout from './Checkout'
 import type { BurgerCustomization, CartItem, CustomerDetails, Product, Settings } from './types'
 
 const initialCustomer: CustomerDetails = { name: '', phone: '', fulfillment: 'delivery', address: '', payment: 'transfer', cash_amount: '', notes: '' }
@@ -93,7 +94,7 @@ export default function App() {
 
     {cartOpen && <CartPanel cart={cart} subtotal={subtotal} settings={settings} onClose={() => setCartOpen(false)} onChange={updateCart} onCheckout={() => { setCartOpen(false); setCheckoutOpen(true) }} />}
     {configuring && <ProductCustomizer product={configuring} customization={customizationFor(configuring)!} currency={settings.currency_symbol} onClose={() => setConfiguring(null)} onAdd={addCustomizedProduct} />}
-    {checkoutOpen && <Checkout cart={cart} settings={settings} onClose={() => setCheckoutOpen(false)} onSuccess={() => { setCart([]); setCheckoutOpen(false); setNotice('Pedido guardado. Se abrió WhatsApp para enviarlo.') }} />}
+    {checkoutOpen && <DeliveryCheckout cart={cart} settings={settings} onClose={() => setCheckoutOpen(false)} onSuccess={() => { setCart([]); setCheckoutOpen(false); setNotice('Pedido guardado. Se abrió WhatsApp para enviarlo.') }} />}
     {notice && <div role="status" className="fixed bottom-5 left-1/2 z-50 -translate-x-1/2 rounded-full bg-mustard px-5 py-3 text-sm font-bold text-ink shadow-glow">{notice}<button onClick={() => setNotice('')} className="ml-3" aria-label="Cerrar aviso">×</button></div>}
   </main>
 }

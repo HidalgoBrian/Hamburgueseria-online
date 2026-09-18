@@ -18,7 +18,10 @@ export async function saveOrder(items: CartItem[], customer: CustomerDetails, se
     customer_name: customer.name,
     customer_phone: customer.phone,
     fulfillment_type: customer.fulfillment,
-    delivery_address: customer.fulfillment === 'delivery' ? customer.address : null,
+    delivery_address: customer.fulfillment === 'delivery' ? (customer.normalized_address || customer.address) : null,
+    delivery_lat: customer.fulfillment === 'delivery' ? customer.delivery_lat : null,
+    delivery_lng: customer.fulfillment === 'delivery' ? customer.delivery_lng : null,
+    delivery_distance_km: customer.fulfillment === 'delivery' ? customer.delivery_distance_km : null,
     payment_method: customer.payment,
     cash_amount: customer.payment === 'cash' && customer.cash_amount ? Number(customer.cash_amount) : null,
     notes: customer.notes || null,
@@ -53,7 +56,7 @@ export async function saveOrder(items: CartItem[], customer: CustomerDetails, se
 export function makeWhatsAppMessage(items: CartItem[], customer: CustomerDetails, settings: Settings, total: number, delivery: number) {
   const lines = items.map((item) => `- ${item.quantity}x ${item.name}${itemDetails(item) ? ` (${itemDetails(item)})` : ''} - ${formatMoney(item.sale_price * item.quantity, settings.currency_symbol)}`)
   const fulfillment = customer.fulfillment === 'delivery'
-    ? `Delivery\nDirección: ${customer.address}\nCosto de envío: ${formatMoney(delivery, settings.currency_symbol)}`
+    ? `Delivery\nDirección: ${customer.normalized_address || customer.address}\nDistancia: ${customer.delivery_distance_km?.toFixed(1) ?? '-'} km\nCosto de envío: ${formatMoney(delivery, settings.currency_symbol)}`
     : `Retiro en persona\nDirección: ${settings.address}`
   const payment = customer.payment === 'transfer'
     ? `Transferencia\nMonto exacto: ${formatMoney(total, settings.currency_symbol)}\nAlias/CBU: ${settings.transfer_alias}\nTitular: ${settings.transfer_holder}${settings.transfer_bank ? `\nBanco: ${settings.transfer_bank}` : ''}`

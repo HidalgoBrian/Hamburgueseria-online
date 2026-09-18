@@ -24,10 +24,13 @@ export const demoSettings: Settings = {
   transfer_alias: 'PENDIENTE.DE.CONFIGURAR',
   transfer_holder: 'Titular pendiente',
   transfer_bank: 'Banco pendiente',
-  address: 'Dirección a configurar',
+  address: 'París 1725, Isidro Casanova',
   opening_hours: 'Jueves a lunes · 20:00 a 00:00 h',
   delivery_fee: 0,
-  delivery_zones: 'Zonas de delivery a configurar',
+  delivery_zones: 'Delivery hasta 4 km a la redonda',
+  delivery_radius_km: 4,
+  latitude: -34.69614304854968,
+  longitude: -58.60093510862048,
   currency_symbol: '$',
 }
 

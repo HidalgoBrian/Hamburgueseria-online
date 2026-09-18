@@ -47,8 +47,23 @@ create table if not exists public.business_settings (
   opening_hours text not null default '',
   delivery_fee numeric(12,2) not null default 0 check (delivery_fee >= 0),
   delivery_zones text not null default '',
+  delivery_radius_km numeric(6,2) not null default 4 check (delivery_radius_km > 0),
+  latitude double precision not null default -34.69614304854968,
+  longitude double precision not null default -58.60093510862048,
   currency_symbol text not null default '$'
 );
+
+insert into public.business_settings (
+  business_name, whatsapp_number, transfer_alias, transfer_holder, transfer_bank,
+  address, opening_hours, delivery_fee, delivery_zones, delivery_radius_km,
+  latitude, longitude, currency_symbol
+)
+select
+  'LA MANTECA', '5491168644174', '', '', '',
+  'París 1725, Isidro Casanova', 'Jueves a lunes · 20:00 a 00:00 h', 0,
+  'Delivery hasta 4 km a la redonda', 4,
+  -34.69614304854968, -58.60093510862048, '$'
+where not exists (select 1 from public.business_settings);
 
 create type public.fulfillment_type as enum ('delivery', 'pickup');
 create type public.payment_method as enum ('transfer', 'cash');
@@ -60,6 +75,9 @@ create table if not exists public.orders (
   customer_phone text not null,
   fulfillment_type public.fulfillment_type not null,
   delivery_address text,
+  delivery_lat double precision,
+  delivery_lng double precision,
+  delivery_distance_km numeric(8,3),
   payment_method public.payment_method not null,
   cash_amount numeric(12,2),
   notes text,
@@ -100,12 +118,37 @@ create policy "owners read order items" on public.order_items for select using (
 -- El navegador no puede leer pedidos públicos: solo crea mediante esta función.
 create or replace function public.create_order_with_items(order_payload jsonb, item_payload jsonb)
 returns uuid language plpgsql security definer set search_path = public as $$
-declare new_order_id uuid;
+declare
+  new_order_id uuid;
+  store_lat double precision;
+  store_lng double precision;
+  max_radius numeric;
+  customer_lat double precision;
+  customer_lng double precision;
+  calculated_distance numeric;
 begin
-  insert into public.orders (customer_name, customer_phone, fulfillment_type, delivery_address, payment_method, cash_amount, notes, subtotal, delivery_fee, total)
+  if order_payload->>'fulfillment_type' = 'delivery' then
+    customer_lat := nullif(order_payload->>'delivery_lat','')::double precision;
+    customer_lng := nullif(order_payload->>'delivery_lng','')::double precision;
+    select latitude, longitude, delivery_radius_km into store_lat, store_lng, max_radius
+      from public.business_settings limit 1;
+    if customer_lat is null or customer_lng is null or store_lat is null or store_lng is null then
+      raise exception 'DELIVERY_ADDRESS_NOT_VERIFIED';
+    end if;
+    calculated_distance := 6371 * 2 * asin(sqrt(least(1,
+      power(sin(radians(customer_lat - store_lat) / 2), 2) +
+      cos(radians(store_lat)) * cos(radians(customer_lat)) * power(sin(radians(customer_lng - store_lng) / 2), 2)
+    )));
+    if calculated_distance > max_radius then
+      raise exception 'DELIVERY_OUT_OF_RANGE';
+    end if;
+  end if;
+
+  insert into public.orders (customer_name, customer_phone, fulfillment_type, delivery_address, delivery_lat, delivery_lng, delivery_distance_km, payment_method, cash_amount, notes, subtotal, delivery_fee, total)
   values (
     order_payload->>'customer_name', order_payload->>'customer_phone', (order_payload->>'fulfillment_type')::public.fulfillment_type,
-    nullif(order_payload->>'delivery_address',''), (order_payload->>'payment_method')::public.payment_method,
+    nullif(order_payload->>'delivery_address',''), customer_lat, customer_lng, calculated_distance,
+    (order_payload->>'payment_method')::public.payment_method,
     nullif(order_payload->>'cash_amount','')::numeric, nullif(order_payload->>'notes',''),
     (order_payload->>'subtotal')::numeric, (order_payload->>'delivery_fee')::numeric, (order_payload->>'total')::numeric
   ) returning id into new_order_id;

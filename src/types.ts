@@ -25,6 +25,9 @@ export interface Settings {
   opening_hours: string
   delivery_fee: number
   delivery_zones: string
+  delivery_radius_km: number
+  latitude: number
+  longitude: number
   currency_symbol: string
 }
 export interface ProductVariant { name: string; price: number }
@@ -42,6 +45,10 @@ export interface CustomerDetails {
   phone: string
   fulfillment: FulfillmentType
   address: string
+  normalized_address?: string
+  delivery_lat?: number
+  delivery_lng?: number
+  delivery_distance_km?: number
   payment: PaymentMethod
   cash_amount: string
   notes: string

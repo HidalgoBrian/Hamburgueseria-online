@@ -10,6 +10,8 @@ Web de pedidos para un único local: catálogo mobile-first, carrito, checkout y
 4. Creá el usuario del dueño en **Authentication > Users** y agregá su UUID a `profiles`, como indica el final del esquema SQL.
 5. Ejecutá `npm run dev` y visitá `/` para el menú o `/admin` para el panel.
 
+Si el proyecto ya tenía el esquema instalado, ejecutá también [supabase/delivery-radius-migration.sql](supabase/delivery-radius-migration.sql) para activar la validación de delivery a 4 km desde París 1725, Isidro Casanova.
+
 Sin variables de Supabase, el menú funciona en modo demostración local. No usar ese modo para producción: no hay login ni persistencia compartida.
 
 ## Datos a completar antes de publicar
