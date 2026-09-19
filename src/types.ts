@@ -42,15 +42,27 @@ export interface Settings {
 export interface ProductVariant {
   name: string;
   price: number;
+  cost?: number;
 }
 export interface ProductExtra {
   name: string;
   price: number;
+  cost: number;
+}
+export interface BurgerAddon {
+  id: string;
+  name: string;
+  sale_price: number;
+  cost_price: number;
+  kind: "patty" | "extra";
+  available: boolean;
+  sort_order: number;
 }
 export interface BurgerCustomization {
   variants: ProductVariant[];
   extras: ProductExtra[];
   extra_patty_price?: number;
+  extra_patty_cost?: number;
 }
 export interface SelectedExtra extends ProductExtra {
   quantity: number;

@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import {
   burgerCustomization,
+  demoBurgerAddons,
   demoCategories,
   demoProducts,
   demoSettings,
@@ -20,10 +21,13 @@ import { formatMoney, makeWhatsAppMessage, saveOrder } from "./lib/orders";
 import { supabase } from "./lib/supabase";
 import DeliveryCheckout from "./Checkout";
 import type {
+  BurgerAddon,
   BurgerCustomization,
   CartItem,
   CustomerDetails,
   Product,
+  ProductExtra,
+  ProductVariant,
   Settings,
 } from "./types";
 
@@ -41,6 +45,8 @@ export default function App() {
   const [products, setProducts] = useState<Product[]>(demoProducts);
   const [categories, setCategories] = useState(demoCategories);
   const [settings, setSettings] = useState<Settings>(demoSettings);
+  const [burgerAddons, setBurgerAddons] =
+    useState<BurgerAddon[]>(demoBurgerAddons);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [cart, setCart] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
@@ -54,13 +60,16 @@ export default function App() {
       supabase.from("products").select("*").order("name"),
       supabase.from("categories").select("*").order("sort_order"),
       supabase.from("business_settings").select("*").limit(1).maybeSingle(),
-    ]).then(([productResult, categoryResult, settingsResult]) => {
+      supabase.from("burger_addons").select("*").order("sort_order"),
+    ]).then(([productResult, categoryResult, settingsResult, addonResult]) => {
       if (!productResult.error && productResult.data)
         setProducts(productResult.data);
       if (!categoryResult.error && categoryResult.data)
         setCategories(categoryResult.data);
       if (!settingsResult.error && settingsResult.data)
         setSettings(settingsResult.data);
+      if (!addonResult.error && addonResult.data)
+        setBurgerAddons(addonResult.data);
     });
   }, []);
 
@@ -85,22 +94,27 @@ export default function App() {
       (entry) => entry.id === product.category_id,
     );
     if (!category?.name.toLocaleLowerCase().includes("hamburgues")) return null;
-    const savedCustomization = product.customization;
-    const extraPattyPrice = Number(
-      savedCustomization?.extra_patty_price ?? 2000,
+    const pattyAddon = burgerAddons.find(
+      (addon) => addon.kind === "patty" && addon.available,
     );
-    const variantTemplate = savedCustomization?.variants?.length
-      ? savedCustomization.variants
-      : burgerCustomization.variants;
+    const extraPattyPrice = Number(pattyAddon?.sale_price ?? 0);
+    const extraPattyCost = Number(pattyAddon?.cost_price ?? 0);
     return {
       ...burgerCustomization,
-      ...savedCustomization,
-      variants: variantTemplate.map((variant, index) => ({
+      variants: burgerCustomization.variants.map((variant, index) => ({
         ...variant,
         price: product.sale_price + index * extraPattyPrice,
+        cost: product.cost_price + index * extraPattyCost,
       })),
-      extras: savedCustomization?.extras ?? burgerCustomization.extras,
+      extras: burgerAddons
+        .filter((addon) => addon.kind === "extra" && addon.available)
+        .map((addon) => ({
+          name: addon.name,
+          price: Number(addon.sale_price),
+          cost: Number(addon.cost_price),
+        })),
       extra_patty_price: extraPattyPrice,
+      extra_patty_cost: extraPattyCost,
     };
   };
 
@@ -125,12 +139,16 @@ export default function App() {
 
   const addCustomizedProduct = (
     product: Product,
-    variant: { name: string; price: number },
-    extras: { name: string; price: number; quantity: number }[],
+    variant: ProductVariant,
+    extras: (ProductExtra & { quantity: number })[],
   ) => {
     const selectedExtras = extras.filter((extra) => extra.quantity > 0);
     const extrasTotal = selectedExtras.reduce(
       (total, extra) => total + extra.price * extra.quantity,
+      0,
+    );
+    const extrasCost = selectedExtras.reduce(
+      (total, extra) => total + extra.cost * extra.quantity,
       0,
     );
     const cartKey = `${product.id}-${variant.name}-${selectedExtras.map((extra) => `${extra.name}-${extra.quantity}`).join("|")}`;
@@ -139,6 +157,7 @@ export default function App() {
         ...product,
         cart_key: cartKey,
         sale_price: variant.price + extrasTotal,
+        cost_price: (variant.cost ?? product.cost_price) + extrasCost,
         selected_variant: variant.name,
         selected_extras: selectedExtras,
       },
@@ -441,8 +460,8 @@ function ProductCustomizer({
   onClose: () => void;
   onAdd: (
     product: Product,
-    variant: { name: string; price: number },
-    extras: { name: string; price: number; quantity: number }[],
+    variant: ProductVariant,
+    extras: (ProductExtra & { quantity: number })[],
   ) => void;
 }) {
   const [variant, setVariant] = useState(customization.variants[0]);

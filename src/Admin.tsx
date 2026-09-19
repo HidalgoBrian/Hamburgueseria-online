@@ -3,6 +3,7 @@ import {
   BarChart3,
   CalendarDays,
   Check,
+  CircleDollarSign,
   LockKeyhole,
   LogOut,
   Package,
@@ -15,10 +16,10 @@ import {
 } from "lucide-react";
 import { formatMoney } from "./lib/orders";
 import { supabase } from "./lib/supabase";
-import { burgerCustomization, demoSettings } from "./data";
-import type { Category, Product, ProductExtra, Settings } from "./types";
+import { demoSettings } from "./data";
+import type { BurgerAddon, Category, Product, Settings } from "./types";
 
-type Tab = "dashboard" | "history" | "products" | "settings";
+type Tab = "dashboard" | "history" | "products" | "addons" | "settings";
 const billableStatuses = new Set(["confirmed", "delivered"]);
 const emptyProduct = {
   name: "",
@@ -128,6 +129,7 @@ function OwnerPanel({ onSignOut }: { onSignOut: () => void }) {
   const [tab, setTab] = useState<Tab>("dashboard");
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [addons, setAddons] = useState<BurgerAddon[]>([]);
   const [orders, setOrders] = useState<any[]>([]);
   const [settings, setSettings] = useState<Settings | null>(demoSettings);
   const [editing, setEditing] = useState<any>(null);
@@ -137,10 +139,11 @@ function OwnerPanel({ onSignOut }: { onSignOut: () => void }) {
     const client: any = supabase;
     const start = new Date();
     start.setHours(0, 0, 0, 0);
-    const [productData, categoryData, orderData, settingsData] =
+    const [productData, categoryData, addonData, orderData, settingsData] =
       await Promise.all([
         client.from("products").select("*").order("name"),
         client.from("categories").select("*").order("sort_order"),
+        client.from("burger_addons").select("*").order("sort_order"),
         client
           .from("orders")
           .select("*, order_items(*)")
@@ -150,6 +153,7 @@ function OwnerPanel({ onSignOut }: { onSignOut: () => void }) {
       ]);
     if (productData.data) setProducts(productData.data);
     if (categoryData.data) setCategories(categoryData.data);
+    if (addonData.data) setAddons(addonData.data);
     if (orderData.data) setOrders(orderData.data);
     if (settingsData.data) setSettings(settingsData.data);
   };
@@ -247,6 +251,11 @@ function OwnerPanel({ onSignOut }: { onSignOut: () => void }) {
               },
               { id: "products", label: "Menú", icon: <Package size={17} /> },
               {
+                id: "addons",
+                label: "Adicionales",
+                icon: <CircleDollarSign size={17} />,
+              },
+              {
                 id: "settings",
                 label: "Configuración",
                 icon: <Settings2 size={17} />,
@@ -287,6 +296,13 @@ function OwnerPanel({ onSignOut }: { onSignOut: () => void }) {
               categoryName={categoryName}
               setCategoryName={setCategoryName}
               reload={load}
+            />
+          )}
+          {tab === "addons" && (
+            <AddonsManager
+              addons={addons}
+              reload={load}
+              setMessage={setMessage}
             />
           )}
           {tab === "settings" && (
@@ -807,22 +823,6 @@ function MenuManager({
   setCategoryName,
   reload,
 }: any) {
-  const selectedCategory = categories.find(
-    (category: Category) => category.id === editing?.category_id,
-  );
-  const isBurger = selectedCategory?.name
-    .toLocaleLowerCase("es")
-    .includes("hamburgues");
-  const productExtras: ProductExtra[] =
-    editing?.customization?.extras ?? burgerCustomization.extras;
-  const setProductExtras = (extras: ProductExtra[]) =>
-    setEditing({
-      ...editing,
-      customization: {
-        ...(editing.customization ?? {}),
-        extras,
-      },
-    });
   const addCategory = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!categoryName.trim()) return;
@@ -953,7 +953,7 @@ function MenuManager({
                 }
               />
               <AdminField
-                label="Costo"
+                label="Costo base del producto"
                 type="number"
                 value={editing.cost_price}
                 onChange={(value: string) =>
@@ -976,29 +976,7 @@ function MenuManager({
                   ))}
                 </select>
               </label>
-              {isBurger && (
-                <AdminField
-                  label="Precio por medallón extra"
-                  type="number"
-                  value={editing.customization?.extra_patty_price ?? 2000}
-                  onChange={(value: string) =>
-                    setEditing({
-                      ...editing,
-                      customization: {
-                        ...(editing.customization ?? {}),
-                        extra_patty_price: Number(value),
-                      },
-                    })
-                  }
-                />
-              )}
             </div>
-            {isBurger && (
-              <p className="mt-2 text-xs text-[#816568]">
-                La Doble suma un medallón extra y la Triple suma dos sobre el
-                precio de venta.
-              </p>
-            )}
             <AdminField
               label="Descripción"
               value={editing.description}
@@ -1007,100 +985,6 @@ function MenuManager({
               }
               textarea
             />
-            {isBurger && (
-              <div className="mt-5 rounded-2xl border border-[#ead8bd] bg-white p-4">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <h4 className="font-black">Adicionales</h4>
-                    <p className="text-xs font-normal text-[#816568]">
-                      Modificá el nombre y precio que verá el cliente.
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setProductExtras([
-                        ...productExtras,
-                        { name: "Nuevo adicional", price: 0 },
-                      ])
-                    }
-                    className="rounded-lg bg-[#fff0cf] px-3 py-2 text-xs font-black text-[#a40f18] hover:bg-[#ffe3a8]"
-                  >
-                    + Agregar adicional
-                  </button>
-                </div>
-                {productExtras.length === 0 ? (
-                  <p className="mt-4 text-sm text-[#816568]">
-                    Esta hamburguesa no tiene adicionales.
-                  </p>
-                ) : (
-                  <div className="mt-4 space-y-3">
-                    {productExtras.map((extra, index) => (
-                      <div
-                        key={index}
-                        className="grid items-end gap-2 rounded-xl border border-[#f0e3d1] bg-[#fffaf1] p-3 sm:grid-cols-[1fr_150px_auto]"
-                      >
-                        <label className="text-xs font-bold">
-                          Nombre
-                          <input
-                            value={extra.name}
-                            required
-                            onChange={(event) =>
-                              setProductExtras(
-                                productExtras.map((item, itemIndex) =>
-                                  itemIndex === index
-                                    ? { ...item, name: event.target.value }
-                                    : item,
-                                ),
-                              )
-                            }
-                            className="mt-1 w-full rounded-lg border border-[#dec9a8] bg-white px-3 py-2 text-sm outline-none focus:border-[#b8171d]"
-                          />
-                        </label>
-                        <label className="text-xs font-bold">
-                          Precio
-                          <input
-                            type="number"
-                            min="0"
-                            step="1"
-                            value={extra.price}
-                            required
-                            onChange={(event) =>
-                              setProductExtras(
-                                productExtras.map((item, itemIndex) =>
-                                  itemIndex === index
-                                    ? {
-                                        ...item,
-                                        price: Number(event.target.value),
-                                      }
-                                    : item,
-                                ),
-                              )
-                            }
-                            className="mt-1 w-full rounded-lg border border-[#dec9a8] bg-white px-3 py-2 text-sm outline-none focus:border-[#b8171d]"
-                          />
-                        </label>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setProductExtras(
-                              productExtras.filter(
-                                (_item, itemIndex) => itemIndex !== index,
-                              ),
-                            )
-                          }
-                          className="grid h-10 w-10 place-items-center rounded-lg text-[#a56b70] hover:bg-red-50 hover:text-[#b8171d]"
-                          aria-label={`Eliminar adicional ${extra.name}`}
-                          title="Eliminar adicional"
-                        >
-                          <Trash2 size={17} />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
             <AdminField
               label="URL de la foto (subida a Storage)"
               value={editing.image_url ?? ""}
@@ -1127,6 +1011,225 @@ function MenuManager({
     </>
   );
 }
+
+function AddonsManager({
+  addons,
+  reload,
+  setMessage,
+}: {
+  addons: BurgerAddon[];
+  reload: () => Promise<void>;
+  setMessage: (message: string) => void;
+}) {
+  const createAddon = async () => {
+    const nextOrder =
+      addons.reduce(
+        (highest, addon) => Math.max(highest, addon.sort_order),
+        0,
+      ) + 1;
+    const result = await (supabase as any).from("burger_addons").insert({
+      name: "Nuevo adicional",
+      sale_price: 0,
+      cost_price: 0,
+      kind: "extra",
+      available: true,
+      sort_order: nextOrder,
+    });
+    if (result.error) {
+      setMessage(result.error.message);
+      return;
+    }
+    setMessage("Adicional creado. Ya podés editarlo.");
+    await reload();
+  };
+
+  return (
+    <>
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p className="text-sm font-bold uppercase tracking-widest text-[#b8171d]">
+            Configuración global
+          </p>
+          <h2 className="text-3xl font-black">Adicionales y costos</h2>
+          <p className="mt-2 max-w-2xl text-sm text-[#816568]">
+            Estos valores se aplican a todas las hamburguesas. El costo base de
+            cada producto corresponde a la versión Simple; los costos de
+            medallones y adicionales se suman automáticamente.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => void createAddon()}
+          className="rounded-xl bg-[#b8171d] px-4 py-2.5 text-sm font-black text-white shadow-sm hover:bg-[#991018]"
+        >
+          + Nuevo adicional
+        </button>
+      </div>
+
+      {addons.length === 0 ? (
+        <div className="rounded-2xl border border-amber-300 bg-amber-50 p-5 text-sm text-amber-900">
+          No se encontró la configuración de adicionales. Ejecutá la migración
+          <code className="mx-1 font-bold">
+            supabase/global-addons-migration.sql
+          </code>
+          en Supabase.
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {addons.map((addon) => (
+            <AddonRow
+              key={addon.id}
+              addon={addon}
+              reload={reload}
+              setMessage={setMessage}
+            />
+          ))}
+        </div>
+      )}
+    </>
+  );
+}
+
+function AddonRow({
+  addon,
+  reload,
+  setMessage,
+}: {
+  addon: BurgerAddon;
+  reload: () => Promise<void>;
+  setMessage: (message: string) => void;
+}) {
+  const [draft, setDraft] = useState(addon);
+  useEffect(() => setDraft(addon), [addon]);
+
+  const save = async (event: React.FormEvent) => {
+    event.preventDefault();
+    const result = await (supabase as any)
+      .from("burger_addons")
+      .update({
+        name: draft.name.trim(),
+        sale_price: Number(draft.sale_price),
+        cost_price: Number(draft.cost_price),
+        available: draft.kind === "patty" ? true : draft.available,
+      })
+      .eq("id", draft.id);
+    if (result.error) {
+      setMessage(result.error.message);
+      return;
+    }
+    setMessage(`${draft.name} guardado para todas las hamburguesas.`);
+    await reload();
+  };
+
+  const remove = async () => {
+    if (!confirm(`¿Eliminar el adicional ${addon.name}?`)) return;
+    const result = await (supabase as any)
+      .from("burger_addons")
+      .delete()
+      .eq("id", addon.id);
+    if (result.error) {
+      setMessage(result.error.message);
+      return;
+    }
+    setMessage("Adicional eliminado.");
+    await reload();
+  };
+
+  return (
+    <form
+      onSubmit={save}
+      className="rounded-2xl border border-[#ead8bd] bg-white p-4 shadow-sm"
+    >
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <span
+          className={`rounded-full px-2.5 py-1 text-xs font-black ${draft.kind === "patty" ? "bg-[#b8171d] text-white" : "bg-[#fff0cf] text-[#a40f18]"}`}
+        >
+          {draft.kind === "patty" ? "Variantes Doble/Triple" : "Adicional"}
+        </span>
+        {draft.kind === "extra" && (
+          <label className="flex items-center gap-2 text-xs font-bold text-[#69474a]">
+            <input
+              type="checkbox"
+              checked={draft.available}
+              onChange={(event) =>
+                setDraft({ ...draft, available: event.target.checked })
+              }
+            />
+            Visible
+          </label>
+        )}
+      </div>
+      <div className="grid items-end gap-3 md:grid-cols-[1.4fr_1fr_1fr_auto]">
+        <label className="text-sm font-bold">
+          Nombre
+          <input
+            required
+            value={draft.name}
+            onChange={(event) =>
+              setDraft({ ...draft, name: event.target.value })
+            }
+            className="mt-1 w-full rounded-xl border border-[#dec9a8] bg-[#fffaf1] px-3 py-2.5 outline-none focus:border-[#b8171d]"
+          />
+        </label>
+        <label className="text-sm font-bold">
+          Precio de venta
+          <input
+            required
+            min="0"
+            step="1"
+            type="number"
+            value={draft.sale_price}
+            onChange={(event) =>
+              setDraft({ ...draft, sale_price: Number(event.target.value) })
+            }
+            className="mt-1 w-full rounded-xl border border-[#dec9a8] bg-[#fffaf1] px-3 py-2.5 outline-none focus:border-[#b8171d]"
+          />
+        </label>
+        <label className="text-sm font-bold">
+          Costo para el local
+          <input
+            required
+            min="0"
+            step="1"
+            type="number"
+            value={draft.cost_price}
+            onChange={(event) =>
+              setDraft({ ...draft, cost_price: Number(event.target.value) })
+            }
+            className="mt-1 w-full rounded-xl border border-[#dec9a8] bg-[#fffaf1] px-3 py-2.5 outline-none focus:border-[#b8171d]"
+          />
+        </label>
+        <div className="flex gap-2">
+          <button
+            className="grid h-11 place-items-center rounded-xl bg-[#b8171d] px-4 font-black text-white hover:bg-[#991018]"
+            title="Guardar cambios"
+            aria-label={`Guardar ${draft.name}`}
+          >
+            <Save size={18} />
+          </button>
+          {draft.kind === "extra" && (
+            <button
+              type="button"
+              onClick={() => void remove()}
+              className="grid h-11 w-11 place-items-center rounded-xl border border-red-200 bg-red-50 text-[#b8171d] hover:bg-red-100"
+              title="Eliminar adicional"
+              aria-label={`Eliminar ${draft.name}`}
+            >
+              <Trash2 size={18} />
+            </button>
+          )}
+        </div>
+      </div>
+      {draft.kind === "patty" && (
+        <p className="mt-3 text-xs text-[#816568]">
+          La Doble suma una vez este precio y costo; la Triple los suma dos
+          veces.
+        </p>
+      )}
+    </form>
+  );
+}
+
 function SettingsForm({ settings, setSettings, onSave }: any) {
   if (!settings)
     return <p className="text-[#816568]">Cargando configuración…</p>;

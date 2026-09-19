@@ -36,6 +36,42 @@ create table if not exists public.products (
 -- Para proyectos que ya ejecutaron una versión anterior del esquema.
 alter table public.products add column if not exists customization jsonb;
 
+create table if not exists public.burger_addons (
+  id uuid primary key default uuid_generate_v4(),
+  name text not null,
+  sale_price numeric(12,2) not null default 0 check (sale_price >= 0),
+  cost_price numeric(12,2) not null default 0 check (cost_price >= 0),
+  kind text not null default 'extra' check (kind in ('patty', 'extra')),
+  available boolean not null default true,
+  sort_order integer not null default 0,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create unique index if not exists burger_addons_single_patty
+  on public.burger_addons (kind) where kind = 'patty';
+
+insert into public.burger_addons (name, sale_price, cost_price, kind, available, sort_order)
+select 'Medallón extra', 2000, 0, 'patty', true, 0
+where not exists (select 1 from public.burger_addons where kind = 'patty');
+
+insert into public.burger_addons (name, sale_price, cost_price, kind, available, sort_order)
+select seed.name, seed.sale_price, 0, 'extra', true, seed.sort_order
+from (values
+  ('Bacon Extra', 1500::numeric, 1),
+  ('Pickles Extra', 1500::numeric, 2),
+  ('Lechuga Extra', 1500::numeric, 3),
+  ('Tomate Extra', 1500::numeric, 4),
+  ('Cebolla Caramelizada Extra', 1500::numeric, 5),
+  ('Huevo Extra', 1500::numeric, 6),
+  ('Queso Dambo Extra', 1500::numeric, 7),
+  ('Queso Cheddar Extra', 1500::numeric, 8)
+) as seed(name, sale_price, sort_order)
+where not exists (
+  select 1 from public.burger_addons existing
+  where existing.kind = 'extra' and lower(existing.name) = lower(seed.name)
+);
+
 create table if not exists public.business_settings (
   id uuid primary key default uuid_generate_v4(),
   business_name text not null,
@@ -102,15 +138,18 @@ create table if not exists public.order_items (
 alter table public.profiles enable row level security;
 alter table public.categories enable row level security;
 alter table public.products enable row level security;
+alter table public.burger_addons enable row level security;
 alter table public.business_settings enable row level security;
 alter table public.orders enable row level security;
 alter table public.order_items enable row level security;
 
 create policy "public can read available products" on public.products for select using (available or public.is_owner());
 create policy "public can read categories" on public.categories for select using (true);
+create policy "public can read available burger addons" on public.burger_addons for select using (available or public.is_owner());
 create policy "public can read settings" on public.business_settings for select using (true);
 create policy "owners manage categories" on public.categories for all using (public.is_owner()) with check (public.is_owner());
 create policy "owners manage products" on public.products for all using (public.is_owner()) with check (public.is_owner());
+create policy "owners manage burger addons" on public.burger_addons for all using (public.is_owner()) with check (public.is_owner());
 create policy "owners manage settings" on public.business_settings for all using (public.is_owner()) with check (public.is_owner());
 create policy "owners read and update orders" on public.orders for all using (public.is_owner()) with check (public.is_owner());
 create policy "owners read order items" on public.order_items for select using (public.is_owner());
