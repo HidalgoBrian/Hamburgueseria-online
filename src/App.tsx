@@ -99,9 +99,7 @@ export default function App() {
         ...variant,
         price: product.sale_price + index * extraPattyPrice,
       })),
-      extras: savedCustomization?.extras?.length
-        ? savedCustomization.extras
-        : burgerCustomization.extras,
+      extras: savedCustomization?.extras ?? burgerCustomization.extras,
       extra_patty_price: extraPattyPrice,
     };
   };

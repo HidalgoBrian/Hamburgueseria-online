@@ -15,8 +15,8 @@ import {
 } from "lucide-react";
 import { formatMoney } from "./lib/orders";
 import { supabase } from "./lib/supabase";
-import { demoSettings } from "./data";
-import type { Category, Product, Settings } from "./types";
+import { burgerCustomization, demoSettings } from "./data";
+import type { Category, Product, ProductExtra, Settings } from "./types";
 
 type Tab = "dashboard" | "history" | "products" | "settings";
 const billableStatuses = new Set(["confirmed", "delivered"]);
@@ -567,6 +567,28 @@ function OrderHistory() {
     );
   };
 
+  const deleteOrder = async (order: any) => {
+    const orderDate = new Intl.DateTimeFormat("es-AR", {
+      dateStyle: "short",
+      timeStyle: "short",
+    }).format(new Date(order.created_at));
+    if (
+      !confirm(
+        `¿Eliminar el pedido de ${order.customer_name} del ${orderDate}?\n\nEsta acción no se puede deshacer.`,
+      )
+    )
+      return;
+    const result = await (supabase as any)
+      .from("orders")
+      .delete()
+      .eq("id", order.id);
+    if (result.error) {
+      setError("No pudimos eliminar el pedido. Intentá nuevamente.");
+      return;
+    }
+    setOrders((current) => current.filter((item) => item.id !== order.id));
+  };
+
   return (
     <>
       <div className="mb-6">
@@ -698,6 +720,19 @@ function OrderHistory() {
                         updateLocalStatus(order.id, nextStatus)
                       }
                     />
+                    <button
+                      type="button"
+                      onClick={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        void deleteOrder(order);
+                      }}
+                      className="rounded-lg border border-red-200 bg-red-50 p-2 text-[#b8171d] transition hover:bg-red-100"
+                      aria-label={`Eliminar pedido de ${order.customer_name}`}
+                      title="Eliminar pedido"
+                    >
+                      <Trash2 size={17} />
+                    </button>
                     <span className="text-xs font-bold text-[#8a686b] group-open:hidden">
                       Ver detalle
                     </span>
@@ -778,6 +813,16 @@ function MenuManager({
   const isBurger = selectedCategory?.name
     .toLocaleLowerCase("es")
     .includes("hamburgues");
+  const productExtras: ProductExtra[] =
+    editing?.customization?.extras ?? burgerCustomization.extras;
+  const setProductExtras = (extras: ProductExtra[]) =>
+    setEditing({
+      ...editing,
+      customization: {
+        ...(editing.customization ?? {}),
+        extras,
+      },
+    });
   const addCategory = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!categoryName.trim()) return;
@@ -962,6 +1007,100 @@ function MenuManager({
               }
               textarea
             />
+            {isBurger && (
+              <div className="mt-5 rounded-2xl border border-[#ead8bd] bg-white p-4">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <h4 className="font-black">Adicionales</h4>
+                    <p className="text-xs font-normal text-[#816568]">
+                      Modificá el nombre y precio que verá el cliente.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setProductExtras([
+                        ...productExtras,
+                        { name: "Nuevo adicional", price: 0 },
+                      ])
+                    }
+                    className="rounded-lg bg-[#fff0cf] px-3 py-2 text-xs font-black text-[#a40f18] hover:bg-[#ffe3a8]"
+                  >
+                    + Agregar adicional
+                  </button>
+                </div>
+                {productExtras.length === 0 ? (
+                  <p className="mt-4 text-sm text-[#816568]">
+                    Esta hamburguesa no tiene adicionales.
+                  </p>
+                ) : (
+                  <div className="mt-4 space-y-3">
+                    {productExtras.map((extra, index) => (
+                      <div
+                        key={index}
+                        className="grid items-end gap-2 rounded-xl border border-[#f0e3d1] bg-[#fffaf1] p-3 sm:grid-cols-[1fr_150px_auto]"
+                      >
+                        <label className="text-xs font-bold">
+                          Nombre
+                          <input
+                            value={extra.name}
+                            required
+                            onChange={(event) =>
+                              setProductExtras(
+                                productExtras.map((item, itemIndex) =>
+                                  itemIndex === index
+                                    ? { ...item, name: event.target.value }
+                                    : item,
+                                ),
+                              )
+                            }
+                            className="mt-1 w-full rounded-lg border border-[#dec9a8] bg-white px-3 py-2 text-sm outline-none focus:border-[#b8171d]"
+                          />
+                        </label>
+                        <label className="text-xs font-bold">
+                          Precio
+                          <input
+                            type="number"
+                            min="0"
+                            step="1"
+                            value={extra.price}
+                            required
+                            onChange={(event) =>
+                              setProductExtras(
+                                productExtras.map((item, itemIndex) =>
+                                  itemIndex === index
+                                    ? {
+                                        ...item,
+                                        price: Number(event.target.value),
+                                      }
+                                    : item,
+                                ),
+                              )
+                            }
+                            className="mt-1 w-full rounded-lg border border-[#dec9a8] bg-white px-3 py-2 text-sm outline-none focus:border-[#b8171d]"
+                          />
+                        </label>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setProductExtras(
+                              productExtras.filter(
+                                (_item, itemIndex) => itemIndex !== index,
+                              ),
+                            )
+                          }
+                          className="grid h-10 w-10 place-items-center rounded-lg text-[#a56b70] hover:bg-red-50 hover:text-[#b8171d]"
+                          aria-label={`Eliminar adicional ${extra.name}`}
+                          title="Eliminar adicional"
+                        >
+                          <Trash2 size={17} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
             <AdminField
               label="URL de la foto (subida a Storage)"
               value={editing.image_url ?? ""}
