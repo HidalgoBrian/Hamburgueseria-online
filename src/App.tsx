@@ -704,7 +704,7 @@ function CartPanel({
             </div>
             <button
               onClick={onCheckout}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-ember px-5 py-3 font-black text-white hover:bg-[#ff7137]"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-ember px-5 py-3 font-black text-white hover:bg-[#850a12]"
             >
               Continuar pedido <ChevronRight size={18} />
             </button>
