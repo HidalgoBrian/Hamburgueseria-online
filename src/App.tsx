@@ -190,10 +190,12 @@ export default function App() {
             href="#menu"
             className="flex items-center gap-2 font-black tracking-tight"
           >
-            <span className="grid h-9 w-9 place-items-center rounded-lg border-2 border-cream bg-ember text-sm text-cream">
-              LM
-            </span>
-            <span>{settings.business_name}</span>
+            <img
+              src="/favicon.svg"
+              alt="Logo de La Manteca"
+              className="h-10 w-10 rounded-xl shadow-sm"
+            />
+            <span className="text-lg uppercase">{settings.business_name}</span>
           </a>
           <button
             onClick={() => setCartOpen(true)}
