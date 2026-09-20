@@ -191,9 +191,9 @@ export default function App() {
             className="flex items-center gap-2 font-black tracking-tight"
           >
             <img
-              src="/favicon.svg"
+              src="/brand/la-manteca-mascot-v2.png"
               alt="Logo de La Manteca"
-              className="h-10 w-10 rounded-xl shadow-sm"
+              className="h-11 w-11 scale-110 object-contain drop-shadow-[0_4px_8px_rgba(210,74,22,0.3)]"
             />
             <span className="text-lg uppercase">{settings.business_name}</span>
           </a>
@@ -214,7 +214,7 @@ export default function App() {
       </header>
 
       <section className="border-b border-white/10 bg-coal">
-        <div className="mx-auto grid max-w-6xl gap-6 px-4 py-10 sm:px-6 sm:py-14 md:grid-cols-[1.4fr_.6fr] md:items-end">
+        <div className="mx-auto grid max-w-6xl gap-6 px-4 py-10 sm:px-6 sm:py-14 md:grid-cols-[1.4fr_.6fr] md:items-center">
           <div>
             <p className="mb-3 inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[.18em] text-mustard">
               <Flame size={16} /> Fast · fresh · con sabor
@@ -231,15 +231,42 @@ export default function App() {
               <span>{settings.opening_hours}</span>
             </div>
           </div>
-          <div className="rounded-2xl border-4 border-ember bg-coal p-3 shadow-glow">
-            <img
-              src="/brand/la-manteca-brand.png"
-              alt="La Manteca Burger — la clave del sabor"
-              className="h-72 w-full object-contain sm:h-80"
-            />
-            <p className="border-t border-cream/30 pt-3 text-center text-sm font-bold tracking-wide text-cream">
-              {settings.delivery_zones || "Estamos haciendo envíos"}
-            </p>
+          <div className="relative overflow-hidden rounded-[2rem] border border-mustard/50 bg-ink p-5 shadow-glow">
+            <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-ember/20 blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-20 -left-16 h-44 w-44 rounded-full bg-mustard/15 blur-3xl" />
+            <div className="relative">
+              <img
+                src="/brand/la-manteca-mascot-v2.png"
+                alt="Mascota de La Manteca sosteniendo una hamburguesa"
+                className="mx-auto h-52 w-full object-contain drop-shadow-[0_14px_18px_rgba(0,0,0,0.45)] sm:h-60"
+              />
+              <div className="mt-1 text-center uppercase leading-none">
+                <p className="text-[0.65rem] font-black tracking-[0.42em] text-ember">
+                  La clave del sabor
+                </p>
+                <p className="mt-2 whitespace-nowrap text-3xl font-black tracking-tight text-cream lg:text-4xl">
+                  {settings.business_name}
+                </p>
+                <div className="mt-2 flex items-center justify-center gap-3">
+                  <span className="h-px w-12 bg-ember" />
+                  <span className="text-xs font-black tracking-[0.35em] text-mustard">
+                    Burger
+                  </span>
+                  <span className="h-px w-12 bg-ember" />
+                </div>
+              </div>
+              <div
+                className="mx-auto mt-4 h-2 w-40 rounded-full border border-cream/20"
+                style={{
+                  backgroundImage:
+                    "repeating-linear-gradient(90deg, #e5bd83 0 10px, #d24a16 10px 20px)",
+                }}
+                aria-hidden="true"
+              />
+              <p className="mt-4 border-t border-cream/20 pt-3 text-center text-sm font-bold tracking-wide text-cream/90">
+                {settings.delivery_zones || "Estamos haciendo envíos"}
+              </p>
+            </div>
           </div>
         </div>
       </section>
