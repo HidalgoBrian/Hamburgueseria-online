@@ -392,7 +392,7 @@ function ProductGrid({
       {products.map((product) => (
         <article
           key={product.id}
-          className="overflow-hidden rounded-2xl border border-white/10 bg-coal shadow-glow"
+          className="overflow-hidden rounded-2xl border border-white/20 bg-coal text-white shadow-glow"
         >
           <div className="relative aspect-[16/9] bg-gradient-to-br from-[#a40f18] to-[#640910]">
             {product.image_url ? (
@@ -413,12 +413,12 @@ function ProductGrid({
             </span>
           </div>
           <div className="p-5">
-            <h3 className="text-xl font-black">{product.name}</h3>
-            <p className="mt-2 min-h-10 text-sm leading-relaxed text-cream/65">
+            <h3 className="text-xl font-black text-white">{product.name}</h3>
+            <p className="mt-2 min-h-10 text-sm font-semibold leading-relaxed text-white/90">
               {product.description}
             </p>
             <div className="mt-5 flex items-center justify-between gap-3">
-              <strong className="text-lg text-mustard">
+              <strong className="text-lg font-black text-white">
                 {formatMoney(
                   customizationFor(product)?.variants[0]?.price ??
                     product.sale_price,
