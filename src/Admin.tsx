@@ -142,18 +142,26 @@ function OwnerPanel({ onSignOut }: { onSignOut: () => void }) {
     const client: any = supabase;
     const start = new Date();
     start.setHours(0, 0, 0, 0);
-    const [productData, categoryData, addonData, orderData, settingsData] =
-      await Promise.all([
-        client.from("products").select("*").order("sort_order").order("name"),
-        client.from("categories").select("*").order("sort_order"),
-        client.from("burger_addons").select("*").order("sort_order"),
-        client
-          .from("orders")
-          .select("*, order_items(*)")
-          .gte("created_at", start.toISOString())
-          .order("created_at", { ascending: false }),
-        client.from("business_settings").select("*").limit(1).maybeSingle(),
-      ]);
+    const [
+      orderedProductData,
+      categoryData,
+      addonData,
+      orderData,
+      settingsData,
+    ] = await Promise.all([
+      client.from("products").select("*").order("sort_order").order("name"),
+      client.from("categories").select("*").order("sort_order"),
+      client.from("burger_addons").select("*").order("sort_order"),
+      client
+        .from("orders")
+        .select("*, order_items(*)")
+        .gte("created_at", start.toISOString())
+        .order("created_at", { ascending: false }),
+      client.from("business_settings").select("*").limit(1).maybeSingle(),
+    ]);
+    const productData = orderedProductData.error
+      ? await client.from("products").select("*").order("name")
+      : orderedProductData;
     if (productData.data) setProducts(productData.data);
     if (categoryData.data) setCategories(categoryData.data);
     if (addonData.data) setAddons(addonData.data);

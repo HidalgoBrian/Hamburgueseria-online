@@ -56,12 +56,22 @@ export default function App() {
 
   useEffect(() => {
     if (!supabase) return;
-    void Promise.all([
-      supabase.from("products").select("*").order("sort_order").order("name"),
-      supabase.from("categories").select("*").order("sort_order"),
-      supabase.from("business_settings").select("*").limit(1).maybeSingle(),
-      supabase.from("burger_addons").select("*").order("sort_order"),
-    ]).then(([productResult, categoryResult, settingsResult, addonResult]) => {
+    const client = supabase;
+    const loadStore = async () => {
+      const [
+        orderedProductResult,
+        categoryResult,
+        settingsResult,
+        addonResult,
+      ] = await Promise.all([
+        client.from("products").select("*").order("sort_order").order("name"),
+        client.from("categories").select("*").order("sort_order"),
+        client.from("business_settings").select("*").limit(1).maybeSingle(),
+        client.from("burger_addons").select("*").order("sort_order"),
+      ]);
+      const productResult = orderedProductResult.error
+        ? await client.from("products").select("*").order("name")
+        : orderedProductResult;
       if (!productResult.error && productResult.data)
         setProducts(productResult.data);
       if (!categoryResult.error && categoryResult.data)
@@ -70,7 +80,8 @@ export default function App() {
         setSettings(settingsResult.data);
       if (!addonResult.error && addonResult.data)
         setBurgerAddons(addonResult.data);
-    });
+    };
+    void loadStore();
   }, []);
 
   const visibleProducts = useMemo(
