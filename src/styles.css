@@ -6,9 +6,9 @@
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body { margin: 0; min-width: 320px; }
-button, input, textarea { font: inherit; }
+button, input, textarea, select { font: inherit; }
 button { cursor: pointer; }
-button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px solid #d24a16; outline-offset: 3px; }
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 3px solid #d24a16; outline-offset: 3px; }
 h1, h2, h3 { font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif; letter-spacing: .015em; }
 main.bg-ink.text-cream { color: #e5bd83; }
 main .bg-cream.text-ink, main .bg-mustard.text-ink, main .text-ink { color: #120b07; }

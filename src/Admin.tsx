@@ -74,7 +74,7 @@ export default function Admin() {
           }}
           className="w-full max-w-sm rounded-2xl border border-white/10 bg-coal p-6 shadow-glow"
         >
-          <div className="mb-6 grid h-12 w-12 place-items-center rounded-full bg-ember">
+          <div className="mb-6 grid h-12 w-12 place-items-center rounded-full bg-ember text-ink">
             <LockKeyhole />
           </div>
           <p className="text-sm font-bold uppercase tracking-wider text-mustard">
@@ -88,7 +88,7 @@ export default function Admin() {
               onChange={(event) => setEmail(event.target.value)}
               type="email"
               required
-              className="mt-1 w-full rounded-xl border border-white/15 bg-ink px-3 py-2.5"
+              className="mt-1 w-full rounded-xl border border-cream/20 bg-ink px-3 py-2.5 outline-none focus:border-mustard"
             />
           </label>
           <label className="mt-4 block text-sm font-bold">
@@ -98,11 +98,11 @@ export default function Admin() {
               onChange={(event) => setPassword(event.target.value)}
               type="password"
               required
-              className="mt-1 w-full rounded-xl border border-white/15 bg-ink px-3 py-2.5"
+              className="mt-1 w-full rounded-xl border border-cream/20 bg-ink px-3 py-2.5 outline-none focus:border-mustard"
             />
           </label>
           {error && <p className="mt-3 text-sm text-red-300">{error}</p>}
-          <button className="mt-6 w-full rounded-xl bg-ember py-3 font-black">
+          <button className="mt-6 w-full rounded-xl bg-ember py-3 font-black text-ink transition hover:bg-mustard">
             Ingresar
           </button>
         </form>
@@ -238,25 +238,32 @@ function OwnerPanel({ onSignOut }: { onSignOut: () => void }) {
     void load();
   };
   return (
-    <main className="min-h-screen bg-[#fff7e8] text-[#4f171c]">
-      <header className="border-b border-[#7f0d14] bg-[#a91119] text-[#fff1ca] shadow-sm">
+    <main className="min-h-screen bg-ink text-cream">
+      <header className="border-b border-mustard/30 bg-coal text-cream shadow-sm">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-widest text-mustard">
-              Panel del dueño
-            </p>
-            <h1 className="text-xl font-black">Administración</h1>
+          <div className="flex items-center gap-3">
+            <img
+              src="/brand/la-manteca-mascot-v2.png"
+              alt="La Manteca"
+              className="h-12 w-12 scale-110 object-contain drop-shadow-[0_4px_8px_rgba(210,74,22,0.25)]"
+            />
+            <div>
+              <p className="text-xs font-bold uppercase tracking-widest text-mustard">
+                Panel del dueño
+              </p>
+              <h1 className="text-xl font-black">Administración</h1>
+            </div>
           </div>
           <button
             onClick={onSignOut}
-            className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-[#fff1ca]/80 hover:bg-white/10 hover:text-white"
+            className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-cream/70 hover:bg-white/5 hover:text-cream"
           >
             <LogOut size={17} /> Salir
           </button>
         </div>
       </header>
       <div className="mx-auto grid max-w-7xl gap-6 px-4 py-6 lg:grid-cols-[190px_1fr]">
-        <nav className="flex gap-2 overflow-x-auto rounded-2xl border border-[#ead8bd] bg-white p-2 shadow-sm lg:block lg:h-fit lg:space-y-2">
+        <nav className="flex gap-2 overflow-x-auto rounded-2xl border border-cream/15 bg-coal p-2 shadow-[0_12px_30px_rgba(0,0,0,0.22)] lg:block lg:h-fit lg:space-y-2">
           {(
             [
               {
@@ -285,7 +292,7 @@ function OwnerPanel({ onSignOut }: { onSignOut: () => void }) {
             <button
               key={item.id}
               onClick={() => setTab(item.id)}
-              className={`flex w-auto shrink-0 items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-bold transition lg:w-full ${tab === item.id ? "bg-[#b8171d] text-white shadow-sm" : "text-[#6e3337] hover:bg-[#fff0cf] hover:text-[#a40f18]"}`}
+              className={`flex w-auto shrink-0 items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-bold transition lg:w-full ${tab === item.id ? "bg-ember text-ink shadow-sm" : "text-cream/70 hover:bg-mustard/10 hover:text-mustard"}`}
             >
               {item.icon}
               {item.label}
@@ -294,7 +301,7 @@ function OwnerPanel({ onSignOut }: { onSignOut: () => void }) {
         </nav>
         <section>
           {message && (
-            <p className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm font-bold text-emerald-800">
+            <p className="mb-4 rounded-xl border border-emerald-500/30 bg-emerald-950/40 p-3 text-sm font-bold text-emerald-200">
               {message}
             </p>
           )}
@@ -352,7 +359,7 @@ function Dashboard({
   return (
     <>
       <div className="mb-6">
-        <p className="text-sm font-bold uppercase tracking-widest text-[#b8171d]">
+        <p className="text-sm font-bold uppercase tracking-widest text-mustard">
           Hoy
         </p>
         <h2 className="text-3xl font-black">Resumen de pedidos</h2>
@@ -377,28 +384,28 @@ function Dashboard({
         ].map((metric) => (
           <div
             key={metric.label}
-            className="rounded-2xl border border-[#ead8bd] bg-white p-5 shadow-sm"
+            className="rounded-2xl border border-cream/15 bg-coal p-5 shadow-[0_12px_30px_rgba(0,0,0,0.2)]"
           >
-            <p className="text-sm font-semibold text-[#77585a]">
+            <p className="text-sm font-semibold text-cream/65">
               {metric.label}
             </p>
-            <p className="mt-2 text-3xl font-black text-[#b8171d]">
+            <p className="mt-2 text-3xl font-black text-mustard">
               {metric.value}
             </p>
-            <p className="mt-2 text-xs text-[#8d7475]">{metric.help}</p>
+            <p className="mt-2 text-xs text-cream/50">{metric.help}</p>
           </div>
         ))}
       </div>
-      <div className="mt-7 overflow-hidden rounded-2xl border border-[#ead8bd] bg-white shadow-sm">
-        <div className="border-b border-[#eee1cf] bg-[#fffaf1] p-5">
+      <div className="mt-7 overflow-hidden rounded-2xl border border-cream/15 bg-coal shadow-[0_12px_30px_rgba(0,0,0,0.2)]">
+        <div className="border-b border-cream/10 bg-ink/60 p-5">
           <h3 className="font-black">Pedidos de hoy</h3>
         </div>
         {orders.length === 0 ? (
-          <p className="p-5 text-sm text-[#816568]">
+          <p className="p-5 text-sm text-cream/60">
             Todavía no hay pedidos hoy.
           </p>
         ) : (
-          <div className="divide-y divide-[#eee1cf]">
+          <div className="divide-y divide-cream/10">
             {orders.map((order) => (
               <div
                 key={order.id}
@@ -406,7 +413,7 @@ function Dashboard({
               >
                 <div>
                   <p className="font-bold">{order.customer_name}</p>
-                  <p className="text-sm text-[#816568]">
+                  <p className="text-sm text-cream/60">
                     {order.fulfillment_type === "delivery"
                       ? "Delivery"
                       : "Retiro"}{" "}
@@ -460,7 +467,7 @@ function StatusSelect({
         }
         onChanged?.(next);
       }}
-      className="rounded-lg border border-[#ddb76e] bg-[#fff2ca] px-2 py-1.5 text-sm font-semibold text-[#75151b] outline-none focus:border-[#b8171d]"
+      className="rounded-lg border border-mustard/50 bg-mustard/10 px-2 py-1.5 text-sm font-semibold text-cream outline-none focus:border-ember"
     >
       {[
         ["new", "Nuevo"],
@@ -629,13 +636,13 @@ function OrderHistory() {
   return (
     <>
       <div className="mb-6">
-        <p className="text-sm font-bold uppercase tracking-widest text-[#b8171d]">
+        <p className="text-sm font-bold uppercase tracking-widest text-mustard">
           Pedidos guardados
         </p>
         <h2 className="text-3xl font-black">Historial de pedidos</h2>
       </div>
 
-      <div className="rounded-2xl border border-[#ead8bd] bg-white p-4 shadow-sm">
+      <div className="rounded-2xl border border-cream/15 bg-coal p-4 shadow-[0_12px_30px_rgba(0,0,0,0.2)]">
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-[1fr_1fr_1fr_1.4fr]">
           <label className="text-sm font-bold">
             Desde
@@ -644,7 +651,7 @@ function OrderHistory() {
               required
               value={from}
               onChange={(event) => setFrom(event.target.value)}
-              className="mt-1 w-full rounded-xl border border-[#dec9a8] bg-[#fffaf1] px-3 py-2.5 outline-none focus:border-[#b8171d]"
+              className="mt-1 w-full rounded-xl border border-cream/20 bg-ink px-3 py-2.5 text-cream outline-none [color-scheme:dark] focus:border-mustard"
             />
           </label>
           <label className="text-sm font-bold">
@@ -654,7 +661,7 @@ function OrderHistory() {
               required
               value={to}
               onChange={(event) => setTo(event.target.value)}
-              className="mt-1 w-full rounded-xl border border-[#dec9a8] bg-[#fffaf1] px-3 py-2.5 outline-none focus:border-[#b8171d]"
+              className="mt-1 w-full rounded-xl border border-cream/20 bg-ink px-3 py-2.5 text-cream outline-none [color-scheme:dark] focus:border-mustard"
             />
           </label>
           <label className="text-sm font-bold">
@@ -662,7 +669,7 @@ function OrderHistory() {
             <select
               value={status}
               onChange={(event) => setStatus(event.target.value)}
-              className="mt-1 w-full rounded-xl border border-[#dec9a8] bg-[#fffaf1] px-3 py-2.5 outline-none focus:border-[#b8171d]"
+              className="mt-1 w-full rounded-xl border border-cream/20 bg-ink px-3 py-2.5 text-cream outline-none focus:border-mustard"
             >
               <option value="all">Todos</option>
               {statusOptions.map(([id, label]) => (
@@ -677,14 +684,14 @@ function OrderHistory() {
             <span className="relative mt-1 block">
               <Search
                 size={17}
-                className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#9b7779]"
+                className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-cream/40"
               />
               <input
                 type="search"
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
                 placeholder="Cliente, producto o dirección"
-                className="w-full rounded-xl border border-[#dec9a8] bg-[#fffaf1] py-2.5 pl-9 pr-3 outline-none focus:border-[#b8171d]"
+                className="w-full rounded-xl border border-cream/20 bg-ink py-2.5 pl-9 pr-3 text-cream outline-none placeholder:text-cream/35 focus:border-mustard"
               />
             </span>
           </label>
@@ -692,7 +699,7 @@ function OrderHistory() {
       </div>
 
       {error && (
-        <p className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm font-bold text-red-800">
+        <p className="mt-4 rounded-xl border border-red-500/30 bg-red-950/40 p-3 text-sm font-bold text-red-200">
           {error}
         </p>
       )}
@@ -705,40 +712,40 @@ function OrderHistory() {
         ].map((metric) => (
           <div
             key={metric.label}
-            className="rounded-2xl border border-[#ead8bd] bg-white p-4 shadow-sm"
+            className="rounded-2xl border border-cream/15 bg-coal p-4 shadow-[0_12px_30px_rgba(0,0,0,0.2)]"
           >
-            <p className="text-xs font-semibold text-[#77585a]">
+            <p className="text-xs font-semibold text-cream/65">
               {metric.label}
             </p>
-            <p className="mt-1 text-2xl font-black text-[#b8171d]">
+            <p className="mt-1 text-2xl font-black text-mustard">
               {metric.value}
             </p>
           </div>
         ))}
       </div>
 
-      <div className="mt-5 overflow-hidden rounded-2xl border border-[#ead8bd] bg-white shadow-sm">
-        <div className="border-b border-[#eee1cf] bg-[#fffaf1] p-4">
+      <div className="mt-5 overflow-hidden rounded-2xl border border-cream/15 bg-coal shadow-[0_12px_30px_rgba(0,0,0,0.2)]">
+        <div className="border-b border-cream/10 bg-ink/60 p-4">
           <h3 className="font-black">Detalle del período</h3>
-          <p className="mt-1 text-xs text-[#816568]">
+          <p className="mt-1 text-xs text-cream/60">
             La facturación y ganancia solo incluyen pedidos confirmados o
             entregados.
           </p>
         </div>
         {loading ? (
-          <p className="p-5 text-sm text-[#816568]">Cargando pedidos…</p>
+          <p className="p-5 text-sm text-cream/60">Cargando pedidos…</p>
         ) : visibleOrders.length === 0 ? (
-          <p className="p-5 text-sm text-[#816568]">
+          <p className="p-5 text-sm text-cream/60">
             No hay pedidos que coincidan con estos filtros.
           </p>
         ) : (
-          <div className="divide-y divide-[#eee1cf]">
+          <div className="divide-y divide-cream/10">
             {visibleOrders.map((order) => (
-              <details key={order.id} className="group p-4 open:bg-[#fffaf1]">
+              <details key={order.id} className="group p-4 open:bg-mustard/5">
                 <summary className="flex cursor-pointer list-none flex-wrap items-center justify-between gap-3 [&::-webkit-details-marker]:hidden">
                   <div className="min-w-[180px] flex-1">
                     <p className="font-bold">{order.customer_name}</p>
-                    <p className="text-sm text-[#816568]">
+                    <p className="text-sm text-cream/60">
                       {new Intl.DateTimeFormat("es-AR", {
                         dateStyle: "short",
                         timeStyle: "short",
@@ -764,23 +771,23 @@ function OrderHistory() {
                         event.stopPropagation();
                         void deleteOrder(order);
                       }}
-                      className="rounded-lg border border-red-200 bg-red-50 p-2 text-[#b8171d] transition hover:bg-red-100"
+                      className="rounded-lg border border-red-500/30 bg-red-950/30 p-2 text-red-300 transition hover:bg-red-900/45"
                       aria-label={`Eliminar pedido de ${order.customer_name}`}
                       title="Eliminar pedido"
                     >
                       <Trash2 size={17} />
                     </button>
-                    <span className="text-xs font-bold text-[#8a686b] group-open:hidden">
+                    <span className="text-xs font-bold text-cream/50 group-open:hidden">
                       Ver detalle
                     </span>
-                    <span className="hidden text-xs font-bold text-[#8a686b] group-open:inline">
+                    <span className="hidden text-xs font-bold text-cream/50 group-open:inline">
                       Ocultar
                     </span>
                   </div>
                 </summary>
-                <div className="mt-4 grid gap-4 border-t border-[#ead8bd] pt-4 lg:grid-cols-[1.4fr_1fr]">
+                <div className="mt-4 grid gap-4 border-t border-cream/15 pt-4 lg:grid-cols-[1.4fr_1fr]">
                   <div>
-                    <p className="text-xs font-black uppercase tracking-wider text-[#b8171d]">
+                    <p className="text-xs font-black uppercase tracking-wider text-mustard">
                       Productos
                     </p>
                     <div className="mt-2 space-y-2">
@@ -801,26 +808,26 @@ function OrderHistory() {
                       ))}
                     </div>
                   </div>
-                  <div className="space-y-2 text-sm text-[#69474a]">
+                  <div className="space-y-2 text-sm text-cream/70">
                     <p>
-                      <strong className="text-[#4f171c]">Pago:</strong>{" "}
+                      <strong className="text-cream">Pago:</strong>{" "}
                       {order.payment_method === "transfer"
                         ? "Transferencia"
                         : "Efectivo"}
                     </p>
                     {order.delivery_address && (
                       <p>
-                        <strong className="text-[#4f171c]">Dirección:</strong>{" "}
+                        <strong className="text-cream">Dirección:</strong>{" "}
                         {order.delivery_address}
                       </p>
                     )}
                     {order.notes && (
                       <p>
-                        <strong className="text-[#4f171c]">Notas:</strong>{" "}
+                        <strong className="text-cream">Notas:</strong>{" "}
                         {order.notes}
                       </p>
                     )}
-                    <p className="break-all text-xs text-[#9a7e80]">
+                    <p className="break-all text-xs text-cream/40">
                       Pedido {order.id}
                     </p>
                   </div>
@@ -906,7 +913,7 @@ function MenuManager({
     <>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-sm font-bold uppercase tracking-widest text-[#b8171d]">
+          <p className="text-sm font-bold uppercase tracking-widest text-mustard">
             Catálogo
           </p>
           <h2 className="text-3xl font-black">Productos y categorías</h2>
@@ -918,13 +925,13 @@ function MenuManager({
               category_id: categories[0]?.id ?? "",
             })
           }
-          className="rounded-xl bg-[#b8171d] px-4 py-2.5 text-sm font-black text-white shadow-sm hover:bg-[#991018]"
+          className="rounded-xl bg-ember px-4 py-2.5 text-sm font-black text-ink shadow-sm transition hover:bg-mustard"
         >
           Nuevo producto
         </button>
       </div>
       <div className="grid gap-5 xl:grid-cols-[1fr_1.1fr]">
-        <div className="rounded-2xl border border-[#ead8bd] bg-white p-5 shadow-sm">
+        <div className="rounded-2xl border border-cream/15 bg-coal p-5 shadow-[0_12px_30px_rgba(0,0,0,0.2)]">
           <h3 className="flex items-center gap-2 font-black">
             <Tags size={18} /> Categorías
           </h3>
@@ -933,9 +940,9 @@ function MenuManager({
               value={categoryName}
               onChange={(event) => setCategoryName(event.target.value)}
               placeholder="Nueva categoría"
-              className="min-w-0 flex-1 rounded-xl border border-[#dec9a8] bg-[#fffaf1] px-3 py-2 text-[#4f171c] outline-none focus:border-[#b8171d]"
+              className="min-w-0 flex-1 rounded-xl border border-cream/20 bg-ink px-3 py-2 text-cream outline-none placeholder:text-cream/35 focus:border-mustard"
             />
-            <button className="rounded-xl bg-[#b8171d] px-3 font-black text-white hover:bg-[#991018]">
+            <button className="rounded-xl bg-ember px-3 font-black text-ink transition hover:bg-mustard">
               Agregar
             </button>
           </form>
@@ -943,7 +950,7 @@ function MenuManager({
             {categories.map((category: Category) => (
               <div
                 key={category.id}
-                className="flex items-center justify-between rounded-xl border border-[#f0e3d1] bg-[#fffaf1] px-3 py-2"
+                className="flex items-center justify-between rounded-xl border border-cream/10 bg-ink px-3 py-2"
               >
                 <span>{category.name}</span>
                 <button
@@ -956,7 +963,7 @@ function MenuManager({
                       void reload();
                     }
                   }}
-                  className="text-[#a56b70] hover:text-[#b8171d]"
+                  className="text-cream/45 transition hover:text-ember"
                   aria-label={`Eliminar ${category.name}`}
                 >
                   <Trash2 size={16} />
@@ -965,8 +972,8 @@ function MenuManager({
             ))}
           </div>
         </div>
-        <div className="overflow-hidden rounded-2xl border border-[#ead8bd] bg-white shadow-sm">
-          <div className="border-b border-[#eee1cf] bg-[#fffaf1] p-5">
+        <div className="overflow-hidden rounded-2xl border border-cream/15 bg-coal shadow-[0_12px_30px_rgba(0,0,0,0.2)]">
+          <div className="border-b border-cream/10 bg-ink/60 p-5">
             <h3 className="font-black">Productos</h3>
           </div>
           {orderedProducts.map((product: Product) => {
@@ -982,11 +989,11 @@ function MenuManager({
             return (
               <div
                 key={product.id}
-                className="flex items-center justify-between gap-3 border-b border-[#eee1cf] p-4 last:border-0 hover:bg-[#fffaf1]"
+                className="flex items-center justify-between gap-3 border-b border-cream/10 p-4 last:border-0 hover:bg-mustard/5"
               >
                 <div>
                   <p className="font-bold">{product.name}</p>
-                  <p className="text-sm text-[#816568]">
+                  <p className="text-sm text-cream/60">
                     {category?.name ?? "Sin categoría"} ·{" "}
                     {formatMoney(product.sale_price)} ·{" "}
                     {product.available ? "Disponible" : "No disponible"}
@@ -997,7 +1004,7 @@ function MenuManager({
                     type="button"
                     disabled={position === 0}
                     onClick={() => void moveProduct(product, -1)}
-                    className="rounded-lg p-2 text-[#b8171d] hover:bg-[#fde8d0] disabled:cursor-not-allowed disabled:opacity-25"
+                    className="rounded-lg p-2 text-ember transition hover:bg-ember/10 disabled:cursor-not-allowed disabled:opacity-25"
                     aria-label={`Subir ${product.name}`}
                     title="Mostrar antes"
                   >
@@ -1007,7 +1014,7 @@ function MenuManager({
                     type="button"
                     disabled={position === siblings.length - 1}
                     onClick={() => void moveProduct(product, 1)}
-                    className="rounded-lg p-2 text-[#b8171d] hover:bg-[#fde8d0] disabled:cursor-not-allowed disabled:opacity-25"
+                    className="rounded-lg p-2 text-ember transition hover:bg-ember/10 disabled:cursor-not-allowed disabled:opacity-25"
                     aria-label={`Bajar ${product.name}`}
                     title="Mostrar después"
                   >
@@ -1016,7 +1023,7 @@ function MenuManager({
                   <button
                     type="button"
                     onClick={() => setEditing(product)}
-                    className="rounded-lg p-2 text-[#b8171d] hover:bg-[#fde8d0]"
+                    className="rounded-lg p-2 text-ember transition hover:bg-ember/10"
                     aria-label={`Editar ${product.name}`}
                     title="Editar producto"
                   >
@@ -1032,7 +1039,7 @@ function MenuManager({
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black/65 p-4">
           <form
             onSubmit={onSave}
-            className="mx-auto my-5 max-w-xl rounded-2xl bg-[#fff7e8] p-6 text-[#4f171c] shadow-2xl"
+            className="mx-auto my-5 max-w-xl rounded-2xl border border-cream/15 bg-coal p-6 text-cream shadow-2xl"
           >
             <div className="mb-5 flex justify-between">
               <h3 className="text-xl font-black">
@@ -1073,7 +1080,7 @@ function MenuManager({
                   onChange={(event) =>
                     setEditing({ ...editing, category_id: event.target.value })
                   }
-                  className="mt-1 w-full rounded-xl border border-[#dec9a8] bg-white px-3 py-2.5 text-[#4f171c] outline-none focus:border-[#b8171d]"
+                  className="mt-1 w-full rounded-xl border border-cream/20 bg-ink px-3 py-2.5 text-cream outline-none focus:border-mustard"
                 >
                   {categories.map((category: Category) => (
                     <option value={category.id} key={category.id}>
@@ -1108,7 +1115,7 @@ function MenuManager({
               />{" "}
               Disponible en el menú
             </label>
-            <button className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-[#b8171d] py-3 font-black text-white hover:bg-[#991018]">
+            <button className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-ember py-3 font-black text-ink transition hover:bg-mustard">
               <Save size={17} /> Guardar producto
             </button>
           </form>
@@ -1153,11 +1160,11 @@ function AddonsManager({
     <>
       <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-sm font-bold uppercase tracking-widest text-[#b8171d]">
+          <p className="text-sm font-bold uppercase tracking-widest text-mustard">
             Configuración global
           </p>
           <h2 className="text-3xl font-black">Adicionales y costos</h2>
-          <p className="mt-2 max-w-2xl text-sm text-[#816568]">
+          <p className="mt-2 max-w-2xl text-sm text-cream/60">
             Estos valores se aplican a todas las hamburguesas. El costo base de
             cada producto corresponde a la versión Simple; los costos de
             medallones y adicionales se suman automáticamente.
@@ -1166,14 +1173,14 @@ function AddonsManager({
         <button
           type="button"
           onClick={() => void createAddon()}
-          className="rounded-xl bg-[#b8171d] px-4 py-2.5 text-sm font-black text-white shadow-sm hover:bg-[#991018]"
+          className="rounded-xl bg-ember px-4 py-2.5 text-sm font-black text-ink shadow-sm transition hover:bg-mustard"
         >
           + Nuevo adicional
         </button>
       </div>
 
       {addons.length === 0 ? (
-        <div className="rounded-2xl border border-amber-300 bg-amber-50 p-5 text-sm text-amber-900">
+        <div className="rounded-2xl border border-mustard/40 bg-mustard/10 p-5 text-sm text-cream">
           No se encontró la configuración de adicionales. Ejecutá la migración
           <code className="mx-1 font-bold">
             supabase/global-addons-migration.sql
@@ -1244,18 +1251,19 @@ function AddonRow({
   return (
     <form
       onSubmit={save}
-      className="rounded-2xl border border-[#ead8bd] bg-white p-4 shadow-sm"
+      className="rounded-2xl border border-cream/15 bg-coal p-4 shadow-[0_12px_30px_rgba(0,0,0,0.2)]"
     >
       <div className="mb-3 flex items-center justify-between gap-3">
         <span
-          className={`rounded-full px-2.5 py-1 text-xs font-black ${draft.kind === "patty" ? "bg-[#b8171d] text-white" : "bg-[#fff0cf] text-[#a40f18]"}`}
+          className={`rounded-full px-2.5 py-1 text-xs font-black ${draft.kind === "patty" ? "bg-ember text-ink" : "bg-mustard/15 text-mustard"}`}
         >
           {draft.kind === "patty" ? "Variantes Doble/Triple" : "Adicional"}
         </span>
         {draft.kind === "extra" && (
-          <label className="flex items-center gap-2 text-xs font-bold text-[#69474a]">
+          <label className="flex items-center gap-2 text-xs font-bold text-cream/70">
             <input
               type="checkbox"
+              className="accent-ember"
               checked={draft.available}
               onChange={(event) =>
                 setDraft({ ...draft, available: event.target.checked })
@@ -1274,7 +1282,7 @@ function AddonRow({
             onChange={(event) =>
               setDraft({ ...draft, name: event.target.value })
             }
-            className="mt-1 w-full rounded-xl border border-[#dec9a8] bg-[#fffaf1] px-3 py-2.5 outline-none focus:border-[#b8171d]"
+            className="mt-1 w-full rounded-xl border border-cream/20 bg-ink px-3 py-2.5 text-cream outline-none focus:border-mustard"
           />
         </label>
         <label className="text-sm font-bold">
@@ -1288,7 +1296,7 @@ function AddonRow({
             onChange={(event) =>
               setDraft({ ...draft, sale_price: Number(event.target.value) })
             }
-            className="mt-1 w-full rounded-xl border border-[#dec9a8] bg-[#fffaf1] px-3 py-2.5 outline-none focus:border-[#b8171d]"
+            className="mt-1 w-full rounded-xl border border-cream/20 bg-ink px-3 py-2.5 text-cream outline-none focus:border-mustard"
           />
         </label>
         <label className="text-sm font-bold">
@@ -1302,12 +1310,12 @@ function AddonRow({
             onChange={(event) =>
               setDraft({ ...draft, cost_price: Number(event.target.value) })
             }
-            className="mt-1 w-full rounded-xl border border-[#dec9a8] bg-[#fffaf1] px-3 py-2.5 outline-none focus:border-[#b8171d]"
+            className="mt-1 w-full rounded-xl border border-cream/20 bg-ink px-3 py-2.5 text-cream outline-none focus:border-mustard"
           />
         </label>
         <div className="flex gap-2">
           <button
-            className="grid h-11 place-items-center rounded-xl bg-[#b8171d] px-4 font-black text-white hover:bg-[#991018]"
+            className="grid h-11 place-items-center rounded-xl bg-ember px-4 font-black text-ink transition hover:bg-mustard"
             title="Guardar cambios"
             aria-label={`Guardar ${draft.name}`}
           >
@@ -1317,7 +1325,7 @@ function AddonRow({
             <button
               type="button"
               onClick={() => void remove()}
-              className="grid h-11 w-11 place-items-center rounded-xl border border-red-200 bg-red-50 text-[#b8171d] hover:bg-red-100"
+              className="grid h-11 w-11 place-items-center rounded-xl border border-red-500/30 bg-red-950/30 text-red-300 transition hover:bg-red-900/45"
               title="Eliminar adicional"
               aria-label={`Eliminar ${draft.name}`}
             >
@@ -1327,7 +1335,7 @@ function AddonRow({
         </div>
       </div>
       {draft.kind === "patty" && (
-        <p className="mt-3 text-xs text-[#816568]">
+        <p className="mt-3 text-xs text-cream/60">
           La Doble suma una vez este precio y costo; la Triple los suma dos
           veces.
         </p>
@@ -1338,7 +1346,7 @@ function AddonRow({
 
 function SettingsForm({ settings, setSettings, onSave }: any) {
   if (!settings)
-    return <p className="text-[#816568]">Cargando configuración…</p>;
+    return <p className="text-cream/60">Cargando configuración…</p>;
   const numericFields = [
     "delivery_fee",
     "delivery_radius_km",
@@ -1353,9 +1361,9 @@ function SettingsForm({ settings, setSettings, onSave }: any) {
   return (
     <form
       onSubmit={onSave}
-      className="max-w-2xl rounded-2xl border border-[#ead8bd] bg-white p-6 shadow-sm"
+      className="max-w-2xl rounded-2xl border border-cream/15 bg-coal p-6 shadow-[0_12px_30px_rgba(0,0,0,0.2)]"
     >
-      <p className="text-sm font-bold uppercase tracking-widest text-[#b8171d]">
+      <p className="text-sm font-bold uppercase tracking-widest text-mustard">
         Negocio
       </p>
       <h2 className="mb-6 text-3xl font-black">Configuración</h2>
@@ -1426,10 +1434,10 @@ function SettingsForm({ settings, setSettings, onSave }: any) {
         onChange={(v: string) => update("delivery_zones", v)}
         textarea
       />
-      <p className="mt-3 text-xs text-[#816568]">
+      <p className="mt-3 text-xs text-cream/60">
         El radio se calcula en línea recta desde las coordenadas del local.
       </p>
-      <button className="mt-5 flex items-center gap-2 rounded-xl bg-[#b8171d] px-5 py-3 font-black text-white hover:bg-[#991018]">
+      <button className="mt-5 flex items-center gap-2 rounded-xl bg-ember px-5 py-3 font-black text-ink transition hover:bg-mustard">
         <Check size={18} /> Guardar configuración
       </button>
     </form>
@@ -1446,7 +1454,7 @@ function AdminField({
     value: value ?? "",
     onChange: (event: any) => onChange(event.target.value),
     className:
-      "mt-1 w-full rounded-xl border border-[#dec9a8] bg-[#fffaf1] px-3 py-2.5 text-[#4f171c] outline-none focus:border-[#b8171d]",
+      "mt-1 w-full rounded-xl border border-cream/20 bg-ink px-3 py-2.5 text-cream outline-none placeholder:text-cream/35 focus:border-mustard",
   };
   const isPhoto = label === "URL de la foto (subida a Storage)";
   const uploadPhoto = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -1472,14 +1480,14 @@ function AdminField({
       )}
       {isPhoto && (
         <>
-          <span className="mt-2 block text-xs font-normal text-[#816568]">
+          <span className="mt-2 block text-xs font-normal text-cream/60">
             o subí una foto real del producto:
           </span>
           <input
             onChange={uploadPhoto}
             type="file"
             accept="image/*"
-            className="mt-1 block w-full text-xs font-normal text-[#816568] file:mr-3 file:rounded-lg file:border-0 file:bg-[#b8171d] file:px-3 file:py-2 file:font-bold file:text-white"
+            className="mt-1 block w-full text-xs font-normal text-cream/60 file:mr-3 file:rounded-lg file:border-0 file:bg-ember file:px-3 file:py-2 file:font-bold file:text-ink"
           />
         </>
       )}
