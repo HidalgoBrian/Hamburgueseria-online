@@ -4,13 +4,13 @@ export default {
   theme: {
     extend: {
       colors: {
-        ink: '#f2d3a0',
-        coal: '#bd1d25',
-        ember: '#a40f18',
-        cream: '#f8e2b7',
-        mustard: '#e8c381',
+        ink: '#050403',
+        coal: '#120b07',
+        ember: '#d24a16',
+        cream: '#e5bd83',
+        mustard: '#c98b43',
       },
-      boxShadow: { glow: '0 16px 48px rgba(103, 12, 18, .24)' },
+      boxShadow: { glow: '0 16px 48px rgba(210, 74, 22, .18)' },
     },
   },
   plugins: [],

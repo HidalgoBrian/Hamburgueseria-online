@@ -231,7 +231,7 @@ export default function App() {
               <span>{settings.opening_hours}</span>
             </div>
           </div>
-          <div className="rounded-2xl border-4 border-cream bg-ember p-3 shadow-glow">
+          <div className="rounded-2xl border-4 border-ember bg-coal p-3 shadow-glow">
             <img
               src="/brand/la-manteca-brand.png"
               alt="La Manteca Burger — la clave del sabor"
@@ -394,9 +394,9 @@ function ProductGrid({
       {products.map((product) => (
         <article
           key={product.id}
-          className="overflow-hidden rounded-2xl border border-white/20 bg-coal text-white shadow-glow"
+          className="overflow-hidden rounded-2xl border border-ember/45 bg-coal text-cream shadow-glow"
         >
-          <div className="relative aspect-[16/9] bg-gradient-to-br from-[#a40f18] to-[#640910]">
+          <div className="relative aspect-[16/9] bg-gradient-to-br from-[#2b160c] to-[#050403]">
             {product.image_url ? (
               <img
                 src={product.image_url}
@@ -415,12 +415,12 @@ function ProductGrid({
             </span>
           </div>
           <div className="p-5">
-            <h3 className="text-xl font-black text-white">{product.name}</h3>
-            <p className="mt-2 min-h-10 text-sm font-semibold leading-relaxed text-white/90">
+            <h3 className="text-xl font-black text-cream">{product.name}</h3>
+            <p className="mt-2 min-h-10 text-sm font-semibold leading-relaxed text-cream/80">
               {product.description}
             </p>
             <div className="mt-5 flex items-center justify-between gap-3">
-              <strong className="text-lg font-black text-white">
+              <strong className="text-lg font-black text-mustard">
                 {formatMoney(
                   customizationFor(product)?.variants[0]?.price ??
                     product.sale_price,
@@ -429,7 +429,7 @@ function ProductGrid({
               </strong>
               <button
                 onClick={() => onAdd(product)}
-                className="inline-flex items-center gap-1 rounded-full bg-ember px-4 py-2 text-sm font-bold text-white transition hover:bg-[#8b0b13]"
+                className="inline-flex items-center gap-1 rounded-full bg-ember px-4 py-2 text-sm font-bold text-white transition hover:bg-[#a53c16]"
               >
                 <Plus size={16} /> Agregar
               </button>
@@ -500,20 +500,20 @@ function ProductCustomizer({
       aria-modal="true"
       aria-label={`Personalizar ${product.name}`}
     >
-      <section className="flex max-h-[92vh] w-full max-w-lg flex-col overflow-hidden rounded-t-[2rem] bg-cream text-ember shadow-2xl sm:rounded-[2rem]">
+      <section className="flex max-h-[92vh] w-full max-w-lg flex-col overflow-hidden rounded-t-[2rem] border border-ember/40 bg-coal text-cream shadow-2xl sm:rounded-[2rem]">
         <header className="flex items-start justify-between border-b border-ember/15 px-5 py-5">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[.18em] text-ember/70">
+            <p className="text-xs font-bold uppercase tracking-[.18em] text-mustard">
               Personalizá tu pedido
             </p>
             <h2 className="mt-1 text-3xl font-black">{product.name}</h2>
-            <p className="mt-2 max-w-sm font-sans text-sm leading-relaxed text-ember/80">
+            <p className="mt-2 max-w-sm font-sans text-sm leading-relaxed text-cream/75">
               {product.description}
             </p>
           </div>
           <button
             onClick={onClose}
-            className="rounded-full p-2 hover:bg-ember/10"
+            className="rounded-full p-2 hover:bg-white/10"
             aria-label="Cerrar opciones"
           >
             <X />
@@ -545,7 +545,7 @@ function ProductCustomizer({
           </div>
           <div className="mt-7">
             <h3 className="text-xl font-black">Extras para hamburguesas</h3>
-            <div className="mt-3 divide-y divide-ember/15 rounded-2xl border border-ember/15 bg-white/40 px-4">
+            <div className="mt-3 divide-y divide-ember/25 rounded-2xl border border-ember/30 bg-black/20 px-4">
               {extras.map((extra) => (
                 <div
                   key={extra.name}
@@ -553,11 +553,11 @@ function ProductCustomizer({
                 >
                   <div>
                     <p className="font-bold">{extra.name}</p>
-                    <p className="font-sans text-sm text-ember/75">
+                    <p className="font-sans text-sm text-mustard">
                       {formatMoney(extra.price, currency)}
                     </p>
                   </div>
-                  <div className="flex items-center rounded-full border border-ember/25 bg-cream">
+                  <div className="flex items-center rounded-full border border-ember/40 bg-cream text-ink">
                     <button
                       onClick={() => changeExtra(extra.name, -1)}
                       disabled={extra.quantity === 0}
@@ -582,7 +582,7 @@ function ProductCustomizer({
             </div>
           </div>
         </div>
-        <footer className="border-t border-ember/15 bg-cream px-5 py-4">
+        <footer className="border-t border-ember/30 bg-coal px-5 py-4">
           <div className="mb-3 flex items-center justify-between">
             <span className="font-sans text-sm font-semibold">
               Total de tu hamburguesa
@@ -593,7 +593,7 @@ function ProductCustomizer({
           </div>
           <button
             onClick={() => onAdd(product, variant, extras)}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-ember px-5 py-3.5 font-black text-cream transition hover:bg-[#850a12]"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-ember px-5 py-3.5 font-black text-white transition hover:bg-[#a53c16]"
           >
             <ShoppingBag size={18} /> Agregar al pedido
           </button>
@@ -706,7 +706,7 @@ function CartPanel({
             </div>
             <button
               onClick={onCheckout}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-ember px-5 py-3 font-black text-white hover:bg-[#850a12]"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-ember px-5 py-3 font-black text-white hover:bg-[#a53c16]"
             >
               Continuar pedido <ChevronRight size={18} />
             </button>
