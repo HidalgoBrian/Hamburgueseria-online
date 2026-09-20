@@ -28,6 +28,7 @@ create table if not exists public.products (
   cost_price numeric(12,2) not null default 0 check (cost_price >= 0),
   image_url text,
   available boolean not null default true,
+  sort_order integer not null default 0,
   customization jsonb,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -35,6 +36,7 @@ create table if not exists public.products (
 
 -- Para proyectos que ya ejecutaron una versión anterior del esquema.
 alter table public.products add column if not exists customization jsonb;
+alter table public.products add column if not exists sort_order integer not null default 0;
 
 create table if not exists public.burger_addons (
   id uuid primary key default uuid_generate_v4(),

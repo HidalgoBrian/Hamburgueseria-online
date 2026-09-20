@@ -57,7 +57,7 @@ export default function App() {
   useEffect(() => {
     if (!supabase) return;
     void Promise.all([
-      supabase.from("products").select("*").order("name"),
+      supabase.from("products").select("*").order("sort_order").order("name"),
       supabase.from("categories").select("*").order("sort_order"),
       supabase.from("business_settings").select("*").limit(1).maybeSingle(),
       supabase.from("burger_addons").select("*").order("sort_order"),

@@ -21,6 +21,7 @@ export interface Product {
   image_url?: string | null;
   available: boolean;
   category_id: string;
+  sort_order?: number;
   customization?: BurgerCustomization | null;
 }
 export interface Settings {

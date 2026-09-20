@@ -14,6 +14,8 @@ Si el proyecto ya tenía el esquema instalado, ejecutá también [supabase/deliv
 
 Para habilitar los precios y costos globales de medallones y adicionales, ejecutá una vez [supabase/global-addons-migration.sql](supabase/global-addons-migration.sql). Después se administran desde **Administración > Adicionales** y se aplican a todas las hamburguesas.
 
+Para ordenar los productos con las flechas de **Administración > Menú**, ejecutá una vez [supabase/product-order-migration.sql](supabase/product-order-migration.sql).
+
 Sin variables de Supabase, el menú funciona en modo demostración local. No usar ese modo para producción: no hay login ni persistencia compartida.
 
 ## Datos a completar antes de publicar

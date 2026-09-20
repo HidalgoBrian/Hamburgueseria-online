@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
+  ArrowDown,
+  ArrowUp,
   BarChart3,
   CalendarDays,
   Check,
@@ -29,6 +31,7 @@ const emptyProduct = {
   image_url: "",
   available: true,
   category_id: "",
+  sort_order: 0,
 };
 
 export default function Admin() {
@@ -141,7 +144,7 @@ function OwnerPanel({ onSignOut }: { onSignOut: () => void }) {
     start.setHours(0, 0, 0, 0);
     const [productData, categoryData, addonData, orderData, settingsData] =
       await Promise.all([
-        client.from("products").select("*").order("name"),
+        client.from("products").select("*").order("sort_order").order("name"),
         client.from("categories").select("*").order("sort_order"),
         client.from("burger_addons").select("*").order("sort_order"),
         client
@@ -192,6 +195,15 @@ function OwnerPanel({ onSignOut }: { onSignOut: () => void }) {
       sale_price: Number(editing.sale_price),
       cost_price: Number(editing.cost_price),
       image_url: editing.image_url || null,
+      sort_order: editing.id
+        ? Number(editing.sort_order ?? 0)
+        : products
+            .filter((product) => product.category_id === editing.category_id)
+            .reduce(
+              (highest, product) =>
+                Math.max(highest, Number(product.sort_order ?? 0)),
+              -1,
+            ) + 1,
     };
     const result = editing.id
       ? await client.from("products").update(payload).eq("id", editing.id)
@@ -296,6 +308,7 @@ function OwnerPanel({ onSignOut }: { onSignOut: () => void }) {
               categoryName={categoryName}
               setCategoryName={setCategoryName}
               reload={load}
+              setMessage={setMessage}
             />
           )}
           {tab === "addons" && (
@@ -822,7 +835,56 @@ function MenuManager({
   categoryName,
   setCategoryName,
   reload,
+  setMessage,
 }: any) {
+  const orderedProducts: Product[] = [
+    ...categories.flatMap((category: Category) =>
+      products
+        .filter((product: Product) => product.category_id === category.id)
+        .sort(
+          (first: Product, second: Product) =>
+            Number(first.sort_order ?? 0) - Number(second.sort_order ?? 0) ||
+            first.name.localeCompare(second.name, "es"),
+        ),
+    ),
+    ...products.filter(
+      (product: Product) =>
+        !categories.some(
+          (category: Category) => category.id === product.category_id,
+        ),
+    ),
+  ];
+
+  const moveProduct = async (product: Product, direction: -1 | 1) => {
+    const siblings = orderedProducts.filter(
+      (item) => item.category_id === product.category_id,
+    );
+    const currentIndex = siblings.findIndex((item) => item.id === product.id);
+    const targetIndex = currentIndex + direction;
+    if (currentIndex < 0 || targetIndex < 0 || targetIndex >= siblings.length)
+      return;
+    const reordered = [...siblings];
+    [reordered[currentIndex], reordered[targetIndex]] = [
+      reordered[targetIndex],
+      reordered[currentIndex],
+    ];
+    const results = await Promise.all(
+      reordered.map((item, index) =>
+        (supabase as any)
+          .from("products")
+          .update({ sort_order: index })
+          .eq("id", item.id),
+      ),
+    );
+    const failed = results.find((result) => result.error);
+    if (failed?.error) {
+      setMessage(failed.error.message);
+      return;
+    }
+    setMessage(`${product.name} cambió de posición.`);
+    await reload();
+  };
+
   const addCategory = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!categoryName.trim()) return;
@@ -899,27 +961,63 @@ function MenuManager({
           <div className="border-b border-[#eee1cf] bg-[#fffaf1] p-5">
             <h3 className="font-black">Productos</h3>
           </div>
-          {products.map((product: Product) => (
-            <div
-              key={product.id}
-              className="flex items-center justify-between gap-3 border-b border-[#eee1cf] p-4 last:border-0 hover:bg-[#fffaf1]"
-            >
-              <div>
-                <p className="font-bold">{product.name}</p>
-                <p className="text-sm text-[#816568]">
-                  {formatMoney(product.sale_price)} ·{" "}
-                  {product.available ? "Disponible" : "No disponible"}
-                </p>
-              </div>
-              <button
-                onClick={() => setEditing(product)}
-                className="rounded-lg p-2 text-[#b8171d] hover:bg-[#fde8d0]"
-                aria-label={`Editar ${product.name}`}
+          {orderedProducts.map((product: Product) => {
+            const siblings = orderedProducts.filter(
+              (item) => item.category_id === product.category_id,
+            );
+            const position = siblings.findIndex(
+              (item) => item.id === product.id,
+            );
+            const category = categories.find(
+              (item: Category) => item.id === product.category_id,
+            );
+            return (
+              <div
+                key={product.id}
+                className="flex items-center justify-between gap-3 border-b border-[#eee1cf] p-4 last:border-0 hover:bg-[#fffaf1]"
               >
-                <Pencil size={17} />
-              </button>
-            </div>
-          ))}
+                <div>
+                  <p className="font-bold">{product.name}</p>
+                  <p className="text-sm text-[#816568]">
+                    {category?.name ?? "Sin categoría"} ·{" "}
+                    {formatMoney(product.sale_price)} ·{" "}
+                    {product.available ? "Disponible" : "No disponible"}
+                  </p>
+                </div>
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    disabled={position === 0}
+                    onClick={() => void moveProduct(product, -1)}
+                    className="rounded-lg p-2 text-[#b8171d] hover:bg-[#fde8d0] disabled:cursor-not-allowed disabled:opacity-25"
+                    aria-label={`Subir ${product.name}`}
+                    title="Mostrar antes"
+                  >
+                    <ArrowUp size={17} />
+                  </button>
+                  <button
+                    type="button"
+                    disabled={position === siblings.length - 1}
+                    onClick={() => void moveProduct(product, 1)}
+                    className="rounded-lg p-2 text-[#b8171d] hover:bg-[#fde8d0] disabled:cursor-not-allowed disabled:opacity-25"
+                    aria-label={`Bajar ${product.name}`}
+                    title="Mostrar después"
+                  >
+                    <ArrowDown size={17} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEditing(product)}
+                    className="rounded-lg p-2 text-[#b8171d] hover:bg-[#fde8d0]"
+                    aria-label={`Editar ${product.name}`}
+                    title="Editar producto"
+                  >
+                    <Pencil size={17} />
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
       {editing && (
